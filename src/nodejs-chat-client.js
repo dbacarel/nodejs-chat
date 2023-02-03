@@ -1,6 +1,7 @@
 const fs = require('fs')
 const { join } = require('path')
 const net = require('node:net')
+const process = require('node:process');
 const utils = require('./utils')
 
 const log = utils.log(['[CLIENT]'])
@@ -22,11 +23,28 @@ socket.on('error', (error) => {
   console.error('Connection not established: ', error.code)
 });
 
+socket.on('close', (error) => {
+  console.error('Connection closed')
+  process.exit(-1)
+});
+
 const CLIENT_LOGIN_INFO = {
   name: process.env.NAME,
   command: 'JOIN'
 }
 socket.write(JSON.stringify(CLIENT_LOGIN_INFO))
+
+process.stdin.resume()
+
+process.stdin.on('data', (data) => {
+  socket.write(JSON.stringify({
+    command: 'MESSAGE',
+    message: data
+  }))
+
+})
+
+
 
 
 

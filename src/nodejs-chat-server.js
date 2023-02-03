@@ -8,10 +8,15 @@ const messageDispatcher = new MessageHandler()
 const server = net.createServer((clientSocket) => {
   log('New client connected')
   clientSocket.on('data', (data) => {
-    messageDispatcher.handle('data', data)
+    messageDispatcher.handle('data', {
+      socket: clientSocket,
+      data: data
+    })
   })
   clientSocket.on('close', () => {
-    messageDispatcher.handle('close')
+    messageDispatcher.handle('close', {
+      socket: clientSocket
+    })
   })
 });
 
